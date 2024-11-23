@@ -4,4 +4,4 @@ from .models import TbTratamientoclinico
 class TbTratamientosClinicosSerializes(ModelSerializer):
     class Meta:
         model = TbTratamientoclinico
-        fields =['nombretratamiento']
+        fields =['id','nombretratamiento']
