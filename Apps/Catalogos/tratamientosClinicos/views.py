@@ -9,8 +9,6 @@ import logging.handlers
 logger = logging.getLogger(__name__)
 
 
-
-
 from .models import TbTratamientoclinico
 from .serializers import TbTratamientosClinicosSerializes
 
@@ -33,7 +31,6 @@ class TbTratamientoclinioApiView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(status= status.HTTP_201_CREATED, data=serializer.data)
-
 
     @swagger_auto_schema(
         request_body=TbTratamientosClinicosSerializes,
