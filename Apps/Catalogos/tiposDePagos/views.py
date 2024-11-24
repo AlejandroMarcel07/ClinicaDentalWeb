@@ -1,9 +1,12 @@
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 import logging
+
+from ...Seguridad.permissions import CustomPermission
 
 # Configura el logger
 logger = logging.getLogger(__name__)
@@ -14,6 +17,10 @@ from .models import TbTipodepago
 
 
 class TbTipoDePagoApiView(APIView):
+
+    #Nos permite antes de entrar a la clase que el usuario este permitido acceder alguna funcion
+    permission_classes = [IsAuthenticated, CustomPermission]
+    model = TbTipodepago  # Aquí definimos el modelo explícitamente
 
     @swagger_auto_schema(
         responses={200: TbTiposDePagosSerializes(many=True)}
