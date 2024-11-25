@@ -5,4 +5,5 @@ urlpatterns = [
     path('tiposDePago/', include('Apps.Catalogos.tiposDePagos.urls')),
     path('modalidadesdePago/', include('Apps.Catalogos.modalidadesDePagos.urls')),
     path('montosdedescuento/', include('Apps.Catalogos.montosDeDescuentos.urls')),
+    path('generos/', include('Apps.Catalogos.generos.urls')),
 ]
