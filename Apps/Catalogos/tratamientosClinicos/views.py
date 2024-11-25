@@ -38,7 +38,13 @@ class TbTratamientoclinioApiView(APIView):
         serializer= TbTratamientosClinicosSerializes(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(status= status.HTTP_201_CREATED, data=serializer.data)
+        return Response(
+            {
+                "message": "El tipo de tratamiento se inserto exitosamente.",
+                "data": serializer.data
+            },
+            status= status.HTTP_201_CREATED
+        )
 
     @swagger_auto_schema(
         request_body=TbTratamientosClinicosSerializes,
@@ -49,7 +55,13 @@ class TbTratamientoclinioApiView(APIView):
         serializer = TbTratamientosClinicosSerializes(tratamiento, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(status=status.HTTP_200_OK, data=serializer.data)
+        return Response(
+            {
+                "message": "El tratamiento clinico se actualizó exitosamente.",
+                "data": serializer.data
+            },
+          status=status.HTTP_200_OK
+        )
 
     @swagger_auto_schema(responses={204: 'No Content'})
     def delete(self, request, pk):
@@ -57,8 +69,6 @@ class TbTratamientoclinioApiView(APIView):
         tratamiento = get_object_or_404(TbTratamientoclinico, id=pk)
         nombre_tratamiento = tratamiento.nombretratamiento
 
-        if not tratamiento:
-            return Response({'error': 'Departamento no encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
         self.check_object_permissions(request, tratamiento)
         tratamiento.delete()

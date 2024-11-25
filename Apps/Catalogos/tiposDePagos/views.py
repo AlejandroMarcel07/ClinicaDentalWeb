@@ -38,7 +38,13 @@ class TbTipoDePagoApiView(APIView):
         serializer = TbTiposDePagosSerializes(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(status=status.HTTP_201_CREATED, data=serializer.data)
+        return Response(
+            {
+                "message": "La tipo de pago se inserto exitosamente.",
+                "data": serializer.data
+            },
+            status=status.HTTP_201_CREATED
+        )
 
 
     @swagger_auto_schema(
@@ -50,7 +56,13 @@ class TbTipoDePagoApiView(APIView):
         serializer = TbTiposDePagosSerializes(tipo_pago, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(status=status.HTTP_200_OK, data=serializer.data)
+        return Response(
+            {
+                "message": "La tipo de pago se actualizó exitosamente.",
+                "data": serializer.data
+            },
+            status=status.HTTP_200_OK
+        )
 
 
     @swagger_auto_schema(responses={204: 'No Content'})
@@ -58,9 +70,7 @@ class TbTipoDePagoApiView(APIView):
         tipo_pago = get_object_or_404(TbTipodepago, idtipodepago=pk)
         nombre_tipo_pago = tipo_pago.nombretipodepago
 
-        if not tipo_pago:
-            return Response({'error': 'Tipo de pago no encontrado'}, status=status.HTTP_404_NOT_FOUND)
-
+        #Permite que se validen los permisos específicos sobre el objeto en cuestión
         self.check_object_permissions(request, tipo_pago)
         tipo_pago.delete()
 

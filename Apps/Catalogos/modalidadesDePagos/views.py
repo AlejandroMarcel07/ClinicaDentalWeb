@@ -35,7 +35,13 @@ class TbModalidaddePagoApiView(APIView):
         serializer = TbModalidaddePagoSerializers(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(status=status.HTTP_201_CREATED, data=serializer.data)
+        return Response(
+            {
+                "message": "La modalidad de pago se inserto exitosamente.",
+                "data": serializer.data
+            },
+            status=status.HTTP_201_CREATED
+        )
 
     @swagger_auto_schema(
         request_body=TbModalidaddePagoSerializers,
@@ -46,17 +52,18 @@ class TbModalidaddePagoApiView(APIView):
         serializer = TbModalidaddePagoSerializers(modalidad_pago, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(status=status.HTTP_200_OK, data=serializer.data)
-
-
+        return Response(
+            {
+                "message": "La modalidad de pago se actualizó exitosamente.",
+                "data": serializer.data
+            },
+            status=status.HTTP_200_OK
+        )
 
     @swagger_auto_schema(responses={204: 'No Content'})
     def delete(self, request, pk):
         modalidad_pago = get_object_or_404(TbModalidaddepago, idmodalidaddepago=pk)
         nombre_modalidad_pago = modalidad_pago.nombremodalidad
-
-        if not modalidad_pago:
-            return Response({'error': 'Modalidad de pago no encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
         self.check_object_permissions(request, modalidad_pago)
         modalidad_pago.delete()
