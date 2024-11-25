@@ -7,4 +7,5 @@ urlpatterns = [
     path('montosdedescuento/', include('Apps.Catalogos.montosDeDescuentos.urls')),
     path('generos/', include('Apps.Catalogos.generos.urls')),
     path('exploracionesclinicas/', include('Apps.Catalogos.exploracionesClinicas.urls')),
+    path('estadoscuentas/', include('Apps.Catalogos.estadosCuentas.urls')),
 ]
