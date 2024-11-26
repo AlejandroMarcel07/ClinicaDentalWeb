@@ -11,4 +11,5 @@ urlpatterns = [
     path('estadoscitas/', include('Apps.Catalogos.estadosCitas.urls')),
     path('pacientes/', include('Apps.Catalogos.pacientes.urls')),
     path('citas/', include('Apps.Catalogos.citas.urls')),
+    path('recetasmedicas/', include('Apps.Catalogos.recetasMedicas.urls')),
 ]

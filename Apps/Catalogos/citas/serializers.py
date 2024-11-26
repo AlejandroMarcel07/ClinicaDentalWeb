@@ -23,6 +23,12 @@ class TbCitaSerializer(serializers.ModelSerializer):
             'horasalida'
         ]
 
+class TbCitaNombrePacienteSerializer(serializers.ModelSerializer):
+    idpaciente = serializers.CharField(source='idpaciente.nombrecompleto')
+
+    class Meta:
+        model = TbCita
+        fields = ['id', 'idpaciente']
 
 class TbCitaCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:

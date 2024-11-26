@@ -65,6 +65,7 @@ class TbPacienteApiView(APIView):
         paciente = get_object_or_404(TbPaciente, id=pk)
         nombre_paciente = paciente.nombrecompleto
 
+        #Verificamos permiso de objeto
         self.check_object_permissions(request, paciente)
 
         # no borramos si no cambiamos el valor
