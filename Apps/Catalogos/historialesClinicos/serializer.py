@@ -8,6 +8,7 @@ class TbHistorialClinicoViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = TbHistorialclinico
         fields = [
+            'id',
             'idcita',
             'motivo',
             'historiadeldolor',
@@ -19,6 +20,7 @@ class TbHistorialClinicoCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = TbHistorialclinico
         fields = [
+            'id',
             'idcita',
             'motivo',
             'historiadeldolor',

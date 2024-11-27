@@ -23,7 +23,11 @@ class TbExploracionClinicaApiView(APIView):
         responses={200: TbExploracionClinicaSerializers(many=True)}
     )
     def get(self, request):
-        serializer = TbExploracionClinicaSerializers(TbExploracionclinica.objects.all(), many=True)
+        exploracionclinica = TbExploracionclinica.objects.all()
+        serializer = TbExploracionClinicaSerializers(exploracionclinica, many=True)
+        logger.info(
+            f"El usuario '{request.user}' recuperó {exploracionclinica.count()} exploraciones clinicas."
+        )
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
     @swagger_auto_schema(
@@ -33,7 +37,9 @@ class TbExploracionClinicaApiView(APIView):
     def post(self, request):
         serializer = TbExploracionClinicaSerializers(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        exploracionclinica = serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' creó una nueva exploracion clinia con ID: {exploracionclinica.id}.")
         return Response(
             {
                 "message": "La exploracion clinica se inserto exitosamente.",
@@ -51,6 +57,8 @@ class TbExploracionClinicaApiView(APIView):
         serializer = TbExploracionClinicaSerializers(objeto_exploracion, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' actualizó la exploracion clinica con ID: {pk}.")
         return Response(
             {
                 "message": "La exploracion clinica se actualizó exitosamente.",
@@ -67,7 +75,8 @@ class TbExploracionClinicaApiView(APIView):
         self.check_object_permissions(request, objeto_exploracion)
         objeto_exploracion.delete()
 
-        logger.info("Exploracion clinica deleted successfully with ID: %s", pk)
+        logger.info(
+            f"El usuario '{request.user}' eliminó la exploracion clinica con ID: {pk}.")
 
         return Response(
             {

@@ -26,7 +26,9 @@ class TbTipoDePagoApiView(APIView):
         responses={200: TbTiposDePagosSerializes(many=True)}
     )
     def get(self, request):
-        serializer = TbTiposDePagosSerializes(TbTipodepago.objects.all(), many=True)
+        tiposdepagos = TbTipodepago.objects.all()
+        serializer = TbTiposDePagosSerializes(tiposdepagos, many=True)
+        f"El usuario '{request.user}' recuperó {tiposdepagos.count()} tipos de pagos."
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
 
@@ -37,7 +39,9 @@ class TbTipoDePagoApiView(APIView):
     def post(self, request):
         serializer = TbTiposDePagosSerializes(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        tipospagos = serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' creó un nuevo tipo de pago con ID: {tipospagos.idtipodepago}.")
         return Response(
             {
                 "message": "La tipo de pago se inserto exitosamente.",
@@ -56,6 +60,8 @@ class TbTipoDePagoApiView(APIView):
         serializer = TbTiposDePagosSerializes(tipo_pago, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' actualizó el tipo de pago con ID: {pk}.")
         return Response(
             {
                 "message": "La tipo de pago se actualizó exitosamente.",
@@ -74,7 +80,8 @@ class TbTipoDePagoApiView(APIView):
         self.check_object_permissions(request, tipo_pago)
         tipo_pago.delete()
 
-        logger.info("Tipo de pago deleted successfully with ID: %s", pk)
+        logger.info(
+            f"El usuario '{request.user}' eliminó el tipo de pago con ID: {pk}.")
 
         return Response(
             {

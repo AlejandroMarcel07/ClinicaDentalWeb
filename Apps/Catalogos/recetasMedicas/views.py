@@ -20,8 +20,11 @@ class TbRecetaMedicaApiView(APIView):
 
     @swagger_auto_schema(responses={200: TbCitaNombrePacienteSerializer(many=True)})
     def get(self, request):
-
-        serializer = TbRecetaMedicaConNombreSerializer(TbRecetamedica.objects.all(), many=True)
+        recetasmedicas = TbRecetamedica.objects.all()
+        serializer = TbRecetaMedicaConNombreSerializer(recetasmedicas, many=True)
+        logger.info(
+            f"El usuario '{request.user}' recuperó {recetasmedicas.count()} recetas medicas."
+        )
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
     @swagger_auto_schema(request_body=TbRecetaMedicaSerializer, responses={201: TbRecetaMedicaConNombreSerializer})
@@ -30,6 +33,8 @@ class TbRecetaMedicaApiView(APIView):
         if serializer.is_valid():
             receta = serializer.save()
             respuesta_serializer = TbRecetaMedicaConNombreSerializer(receta)
+            logger.info(
+                f"El usuario '{request.user}' creó una nueva receta medica con ID: {receta.id}.")
             return Response(
                 {
                     "message": "La receta médica se insertó exitosamente.",
@@ -50,6 +55,10 @@ class TbRecetaMedicaApiView(APIView):
         serializer.is_valid(raise_exception=True)
         receta = serializer.save()
         respuesta_serializer = TbRecetaMedicaConNombreSerializer(receta)
+
+        logger.info(
+            f"El usuario '{request.user}' actualizó la receta medico con ID: {pk}.")
+
         return Response(
             {
                 "message": "La receta medica se actualizo se actualizó exitosamente.",
@@ -66,7 +75,8 @@ class TbRecetaMedicaApiView(APIView):
         self.check_object_permissions(request, receta_medica)
         receta_medica.delete()
 
-        logger.info("La receta medica deleted successfully with ID: %s", pk)
+        logger.info(
+            f"El usuario '{request.user}' eliminó la receta medica con ID: {pk}.")
 
         return Response(
             {

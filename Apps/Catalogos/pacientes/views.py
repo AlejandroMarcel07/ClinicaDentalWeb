@@ -19,8 +19,11 @@ class TbPacienteApiView(APIView):
 
     @swagger_auto_schema(responses={200: TbPacienteSerializer(many=True)})
     def get(self, request):
-
-        serializer = TbPacienteSerializer(TbPaciente.objects.filter(isdeleted=False), many=True)
+        pacientes = TbPaciente.objects.filter(isdeleted=False)
+        serializer = TbPacienteSerializer(pacientes, many=True)
+        logger.info(
+            f"El usuario '{request.user}' recuperó {pacientes.count()} pacientes."
+        )
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
 
@@ -31,7 +34,11 @@ class TbPacienteApiView(APIView):
     def post(self, request):
         serializer = TbPacienteCreateUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        paciente = serializer.save()
+
+        logger.info(
+            f"El usuario '{request.user}' creó un nuevo paciente con ID: {paciente.id}.")
+
         return Response(
             {
                 "message": "El paciente se creó exitosamente.",
@@ -50,6 +57,9 @@ class TbPacienteApiView(APIView):
         serializer = TbPacienteCreateUpdateSerializer(paciente, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        logger.info(
+            f"El usuario '{request.user}' actualizó un paciente con ID: {pk}.")
         return Response(
             {
                 "message": "El paciente se actualizó exitosamente.",
@@ -72,7 +82,8 @@ class TbPacienteApiView(APIView):
         paciente.isdeleted = True
         paciente.save()
 
-        logger.info("Paciente deleted successfully with ID: %s", pk)
+        logger.info(
+            f"El usuario '{request.user}' eliminó un paciente con ID: {pk}.")
 
         return Response(
             {

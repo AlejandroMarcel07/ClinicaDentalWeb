@@ -23,7 +23,11 @@ class TbEstadoCitaApiView(APIView):
         responses={200: TbEstadoCitaSerializers(many=True)}
     )
     def get(self, request):
-        serializer = TbEstadoCitaSerializers(TbEstadocita.objects.all(), many=True)
+        estadocita = TbEstadocita.objects.all()
+        serializer = TbEstadoCitaSerializers(estadocita, many=True)
+        logger.info(
+            f"El usuario '{request.user}' recuperó {estadocita.count()} estados de cita."
+        )
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
     @swagger_auto_schema(
@@ -33,7 +37,9 @@ class TbEstadoCitaApiView(APIView):
     def post(self, request):
         serializer = TbEstadoCitaSerializers(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        estadocita = serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' creó un nuevo estado de cita con ID: {estadocita.idestadocita}.")
         return Response(
             {
                 "message": "El estado de cita se inserto exitosamente.",
@@ -51,6 +57,8 @@ class TbEstadoCitaApiView(APIView):
         serializer = TbEstadoCitaSerializers(objeto_citas, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' actualizó el estado de cita con ID: {pk}.")
         return Response(
             {
                 "message": "EL estado de cita se actualizó exitosamente.",
@@ -67,7 +75,8 @@ class TbEstadoCitaApiView(APIView):
         self.check_object_permissions(request, objeto_cia)
         objeto_cia.delete()
 
-        logger.info("Estado de cita deleted successfully with ID: %s", pk)
+        logger.info(
+            f"El usuario '{request.user}' eliminó el estado de ctia con ID: {pk}.")
 
         return Response(
             {

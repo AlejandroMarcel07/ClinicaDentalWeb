@@ -23,6 +23,9 @@ class TbCitaApiView(APIView):
     def get(self, request):
         citas = TbCita.objects.all()
         serializer = TbCitaSerializer(citas, many=True)
+        logger.info(
+            f"El usuario '{request.user}' recuperó {citas.count()} citas."
+        )
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
     @swagger_auto_schema(
@@ -32,7 +35,9 @@ class TbCitaApiView(APIView):
     def post(self, request):
         serializer = TbCitaCreateUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        cita = serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' creó un nueva cita con ID: {cita.id}.")
         return Response(
             {
                 "message": "La cita se creó exitosamente.",
@@ -51,6 +56,8 @@ class TbCitaApiView(APIView):
         serializer = TbCitaCreateUpdateSerializer(cita, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' actualizó la cita con ID: {pk}.")
         return Response(
             {
                 "message": "La cita se actualizó exitosamente.",
@@ -71,7 +78,8 @@ class TbCitaApiView(APIView):
         # Obtener el nombre del paciente
         nombre_paciente = cita.idpaciente.nombrecompleto if cita.idpaciente else "Desconocido"
 
-        logger.info("Cita eliminada lógicamente con ID: %s", pk)
+        logger.info(
+            f"El usuario '{request.user}' eliminó la cita con ID: {pk}.")
 
         return Response(
             {

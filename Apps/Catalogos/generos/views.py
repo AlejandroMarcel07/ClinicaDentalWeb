@@ -23,7 +23,11 @@ class TbGeneroApiView(APIView):
         responses={200: TbGeneroSerializers(many=True)}
     )
     def get(self, request):
-        serializer = TbGeneroSerializers(TbGenero.objects.all(), many=True)
+        generos = TbGenero.objects.all()
+        serializer = TbGeneroSerializers(generos, many=True)
+        logger.info(
+            f"El usuario '{request.user}' recuperó {generos.count()} generos."
+        )
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
     @swagger_auto_schema(
@@ -33,7 +37,9 @@ class TbGeneroApiView(APIView):
     def post(self, request):
         serializer = TbGeneroSerializers(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        generos = serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' creó un nuevo genero con ID: {generos.id}.")
         return Response(
             {
                 "message": "El genero se inserto exitosamente.",
@@ -51,6 +57,8 @@ class TbGeneroApiView(APIView):
         serializer = TbGeneroSerializers(id_genero, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' actualizó el genero con ID: {pk}.")
         return Response(
             {
                 "message": "EL genero  se actualizó exitosamente.",
@@ -68,7 +76,8 @@ class TbGeneroApiView(APIView):
         self.check_object_permissions(request, objeto_genero)
         objeto_genero.delete()
 
-        logger.info("Genero deleted successfully with ID: %s", pk)
+        logger.info(
+            f"El usuario '{request.user}' eliminó el genero con ID: {pk}.")
 
         return Response(
             {

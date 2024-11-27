@@ -25,7 +25,11 @@ class TbMontoDeDescuentoApiView(APIView):
     )
 
     def get(self, request):
-        serializer = TbMontoDeDescuentoSerializers(TbMontodedescuento.objects.all(), many=True)
+        montodescuento = TbMontodedescuento.objects.all()
+        serializer = TbMontoDeDescuentoSerializers(montodescuento, many=True)
+        logger.info(
+            f"El usuario '{request.user}' recuperó {montodescuento.count()} montos de decuentos."
+        )
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
     @swagger_auto_schema(
@@ -35,7 +39,10 @@ class TbMontoDeDescuentoApiView(APIView):
     def post(self, request):
         serializer = TbMontoDeDescuentoSerializers(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        montosdescuento = serializer.save()
+
+        logger.info(
+            f"El usuario '{request.user}' creó un nuevo monto de descuento con ID: {montosdescuento.idmontodedescuento}.")
         return Response(
             {
                 "message": "El monto de descuento se inserto exitosamente.",
@@ -53,6 +60,8 @@ class TbMontoDeDescuentoApiView(APIView):
         serializer = TbMontoDeDescuentoSerializers(monto_descuento, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' actualizó un monto de descuento con ID: {pk}.")
         return Response(
             {
                 "message": "El monto de descuento se actualizó exitosamente.",
@@ -69,7 +78,8 @@ class TbMontoDeDescuentoApiView(APIView):
         self.check_object_permissions(request, monto_descuento)
         monto_descuento.delete()
 
-        logger.info("Monto de descuento deleted successfully with ID: %s", pk)
+        logger.info(
+            f"El usuario '{request.user}' eliminó un monto de descuento con ID: {pk}.")
 
         return Response(
             {

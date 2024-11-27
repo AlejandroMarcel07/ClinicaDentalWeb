@@ -23,7 +23,11 @@ class TbModalidaddePagoApiView(APIView):
         responses={200: TbModalidaddePagoSerializers(many=True)}
     )
     def get(self, request):
-        serializer = TbModalidaddePagoSerializers(TbModalidaddepago.objects.all(), many=True)
+        modalidadespago = TbModalidaddepago.objects.all()
+        serializer = TbModalidaddePagoSerializers(modalidadespago, many=True)
+        logger.info(
+            f"El usuario '{request.user}' recuperó {modalidadespago.count()} modalidades de pago."
+        )
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
 
@@ -34,7 +38,9 @@ class TbModalidaddePagoApiView(APIView):
     def post(self, request):
         serializer = TbModalidaddePagoSerializers(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        modalidadespago = serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' creó una nueva modalidad de pago con ID: {modalidadespago.idmodalidaddepago}.")
         return Response(
             {
                 "message": "La modalidad de pago se inserto exitosamente.",
@@ -52,6 +58,8 @@ class TbModalidaddePagoApiView(APIView):
         serializer = TbModalidaddePagoSerializers(modalidad_pago, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' actualizó la modalidad de pago con ID: {pk}.")
         return Response(
             {
                 "message": "La modalidad de pago se actualizó exitosamente.",
@@ -68,7 +76,8 @@ class TbModalidaddePagoApiView(APIView):
         self.check_object_permissions(request, modalidad_pago)
         modalidad_pago.delete()
 
-        logger.info("Modalidad de pago deleted successfully with ID: %s", pk)
+        logger.info(
+            f"El usuario '{request.user}' eliminó la modalidad de pago con ID: {pk}.")
 
         return Response(
             {

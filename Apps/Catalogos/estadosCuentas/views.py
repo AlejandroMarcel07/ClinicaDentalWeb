@@ -23,7 +23,11 @@ class TbEstadoCuentaApiView(APIView):
         responses={200: TbEstadoCuentaSerializers(many=True)}
     )
     def get(self, request):
-        serializer = TbEstadoCuentaSerializers(TbEstadocuenta.objects.all(), many=True)
+        estadocuenta = TbEstadocuenta.objects.all()
+        serializer = TbEstadoCuentaSerializers(estadocuenta, many=True)
+        logger.info(
+            f"El usuario '{request.user}' recuperó {estadocuenta.count()} estados de cuenta."
+        )
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
     @swagger_auto_schema(
@@ -33,7 +37,9 @@ class TbEstadoCuentaApiView(APIView):
     def post(self, request):
         serializer = TbEstadoCuentaSerializers(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        estadocuenta = serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' creó un nuevo estado de cuenta con ID: {estadocuenta.idestadocuenta}.")
         return Response(
             {
                 "message": "El estado de cuenta se inserto exitosamente.",
@@ -51,6 +57,8 @@ class TbEstadoCuentaApiView(APIView):
         serializer = TbEstadoCuentaSerializers(objeto_cuenta, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' actualizó el estado de cuenta con ID: {pk}.")
         return Response(
             {
                 "message": "EL estado de cuenta se actualizó exitosamente.",
@@ -67,7 +75,8 @@ class TbEstadoCuentaApiView(APIView):
         self.check_object_permissions(request, objeto_estado)
         objeto_estado.delete()
 
-        logger.info("Estado de cuenta deleted successfully with ID: %s", pk)
+        logger.info(
+            f"El usuario '{request.user}' eliminó el estado de cuenta con ID: {pk}.")
 
         return Response(
             {
