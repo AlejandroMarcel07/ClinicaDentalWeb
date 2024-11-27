@@ -3,7 +3,7 @@ import logging
 
 class ANSIColorFormatter(logging.Formatter):
     COLORS = {
-        'DEBUG': '\033[36m',        # Cyan
+        'DEBUG': '\033[32m',        # Cyan
         'INFO': '\033[34m',         # Blue
         'WARNING': '\033[33m',      # Yellow
         'ERROR': '\033[31m',        # Red
@@ -17,3 +17,5 @@ class ANSIColorFormatter(logging.Formatter):
             record.levelname = f"{self.COLORS[levelname]}{record.levelname}{self.COLORS['RESET']}"
             record.msg = f"{self.COLORS[levelname]}{record.msg}{self.COLORS['RESET']}"
         return super().format(record)
+
+

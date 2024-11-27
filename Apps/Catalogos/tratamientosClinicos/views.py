@@ -26,7 +26,11 @@ class TbTratamientoclinioApiView(APIView):
     )
     #Este es como una funcion que me permite obtener los datos
     def get(self, request):
-        serializer = TbTratamientosClinicosSerializes(TbTratamientoclinico.objects.all(), many=True)
+        tratamientos = TbTratamientoclinico.objects.all()
+        serializer = TbTratamientosClinicosSerializes(tratamientos, many=True)
+        logger.info(
+            f"El usuario '{request.user}' recuperó {tratamientos.count()} tratamientos clínicos."
+        )
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
     @swagger_auto_schema(
@@ -37,7 +41,9 @@ class TbTratamientoclinioApiView(APIView):
     def post(self, request):
         serializer= TbTratamientosClinicosSerializes(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        tratamiento = serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' creó un nuevo tratamiento con ID: {tratamiento.id}.")
         return Response(
             {
                 "message": "El tipo de tratamiento se inserto exitosamente.",
@@ -55,6 +61,8 @@ class TbTratamientoclinioApiView(APIView):
         serializer = TbTratamientosClinicosSerializes(tratamiento, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        logger.info(
+            f"El usuario '{request.user}' actualizó el tratamiento con ID: {pk}.")
         return Response(
             {
                 "message": "El tratamiento clinico se actualizó exitosamente.",
@@ -73,7 +81,7 @@ class TbTratamientoclinioApiView(APIView):
         self.check_object_permissions(request, tratamiento)
         tratamiento.delete()
         logger.info(
-            "Tratamiento deleted successfully with ID: %s", pk)
+            f"El usuario '{request.user}' eliminó el tratamiento con ID: {pk}.")
 
         return Response(
             {
