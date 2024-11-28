@@ -87,11 +87,11 @@ class TbHistorialExploracionClinicaApiView(APIView):
         historialexploracion.delete()
 
         logger.info(
-            f"El usuario '{request.user}' eliminó el hisotorail exploracion con ID: {pk}.")
+            f"El usuario '{request.user}' eliminó el historial exploracion con ID: {pk}.")
 
         return Response(
             {
-                "message": f"Exploracion clinica con ID {pk} eliminado exitosamente."
+                "message": f"Historial exploracion  con ID {pk} eliminado exitosamente."
             },
             status=status.HTTP_204_NO_CONTENT
         )
