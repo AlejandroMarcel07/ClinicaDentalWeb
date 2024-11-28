@@ -9,7 +9,6 @@ import logging
 
 from .models import TbCita
 from .serializers import TbCitaSerializer
-from ..estadosCitas.models import TbEstadocita
 from ...Seguridad.permissions import CustomPermission
 
 # Configura el logger
