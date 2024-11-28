@@ -99,7 +99,7 @@ class TbCitaProximasApiView(APIView):
         fecha_hoy = now().date()
         fecha_limite = fecha_hoy + timedelta(days=3)
 
-        citas_proximas = TbCita.objects.filter(fecha__range=(fecha_hoy, fecha_limite))
+        citas_proximas = TbCita.objects.filter(idpaciente__isdeleted=False,fecha__range=(fecha_hoy, fecha_limite))
         serializer = TbCitaSerializer(citas_proximas, many=True)
 
         logger.info(

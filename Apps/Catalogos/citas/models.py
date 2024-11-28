@@ -5,7 +5,7 @@ from Apps.Catalogos.pacientes.models import TbPaciente
 
 class TbCita(models.Model):
     id = models.AutoField(db_column='Id', primary_key=True)  # Field name made lowercase.
-    idpaciente = models.ForeignKey(TbPaciente, models.DO_NOTHING, db_column='IdPaciente')  # Field name made lowercase.
+    idpaciente = models.ForeignKey(TbPaciente, models.DO_NOTHING,db_column='IdPaciente')  # Field name made lowercase.
     fecha = models.DateField(db_column='Fecha')  # Field name made lowercase.
     idestadocita = models.ForeignKey(TbEstadocita, models.DO_NOTHING, db_column='IdEstadoCita')  # Field name made lowercase.
     horaentrada = models.TimeField(db_column='HoraEntrada')  # Field name made lowercase.

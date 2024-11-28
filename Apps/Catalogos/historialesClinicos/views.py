@@ -8,6 +8,7 @@ import logging
 
 from .models import TbHistorialclinico
 from .serializer import TbHistorialClinicoViewSerializer
+from ..citas.models import TbCita
 from ...Seguridad.permissions import CustomPermission
 
 # Configura el logger
@@ -19,7 +20,8 @@ class TbHistorialClinicoApiView(APIView):
 
     @swagger_auto_schema(responses={200: TbHistorialClinicoViewSerializer(many=True)})
     def get(self, request):
-        historial = TbHistorialclinico.objects.all()
+        citas_no_eliminadas = TbCita.objects.filter(idpaciente__isdeleted=False)
+        historial = TbHistorialclinico.objects.filter(idcita__in=citas_no_eliminadas)
         serializer = TbHistorialClinicoViewSerializer(historial, many=True)
         logger.info(
             f"El usuario '{request.user}' recuperó {historial.count()} historiales clinicos."

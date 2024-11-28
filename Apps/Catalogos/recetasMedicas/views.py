@@ -8,6 +8,7 @@ import logging
 
 from .models import TbRecetamedica
 from .serializer import TbRecetaMedicaSerializer
+from ..citas.models import TbCita
 from ...Seguridad.permissions import CustomPermission
 
 # Configura el logger
@@ -19,7 +20,8 @@ class TbRecetaMedicaApiView(APIView):
 
     @swagger_auto_schema(responses={200: TbRecetaMedicaSerializer(many=True)})
     def get(self, request):
-        recetasmedicas = TbRecetamedica.objects.all()
+        citas_no_eliminadas = TbCita.objects.filter(idpaciente__isdeleted=False)
+        recetasmedicas = TbRecetamedica.objects.filter(idcita__in=citas_no_eliminadas)
         serializer = TbRecetaMedicaSerializer(recetasmedicas, many=True)
         logger.info(
             f"El usuario '{request.user}' recuperó {recetasmedicas.count()} recetas medicas."
