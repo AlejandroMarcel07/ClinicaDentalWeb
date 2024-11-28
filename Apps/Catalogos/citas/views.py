@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+
 from rest_framework import status
 import logging
 
@@ -71,11 +72,9 @@ class TbCitaApiView(APIView):
         cita = get_object_or_404(TbCita, id=pk)
         self.check_object_permissions(request, cita)
 
-        # Eliminación lógica
         cita.idestadocita_id = 8 #Eliminada
         cita.save()
 
-        # Obtener el nombre del paciente
         nombre_paciente = cita.idpaciente.nombrecompleto if cita.idpaciente else "Desconocido"
 
         logger.info(
@@ -86,4 +85,30 @@ class TbCitaApiView(APIView):
                 "message": f"La cita con ID {pk} del paciente {nombre_paciente} se marcó como eliminada."
             },
             status=status.HTTP_204_NO_CONTENT
+        )
+
+
+class TbCitaProximasApiView(APIView):
+
+    permission_classes = [IsAuthenticated, CustomPermission]
+    model = TbCita
+
+    @swagger_auto_schema(responses={200: TbCitaSerializer(many=True)})
+    def get(self, request):
+        from django.utils.timezone import now, timedelta
+        fecha_hoy = now().date()
+        fecha_limite = fecha_hoy + timedelta(days=3)
+
+        citas_proximas = TbCita.objects.filter(fecha__range=(fecha_hoy, fecha_limite))
+        serializer = TbCitaSerializer(citas_proximas, many=True)
+
+        logger.info(
+            f"El usuario '{request.user}' recuperó {citas_proximas.count()} citas programadas en los próximos 3 días."
+        )
+        return Response(
+            {
+                "message": "Citas programadas en los próximos 3 días recuperadas exitosamente.",
+                "data": serializer.data,
+            },
+            status=status.HTTP_200_OK,
         )
