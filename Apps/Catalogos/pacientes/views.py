@@ -7,7 +7,7 @@ from rest_framework import status
 import logging
 
 from .models import TbPaciente
-from .serializers import TbPacienteSerializer, TbPacienteCreateUpdateSerializer
+from .serializers import TbPacienteSerializer
 from ...Seguridad.permissions import CustomPermission
 
 # Configura el logger
@@ -28,11 +28,11 @@ class TbPacienteApiView(APIView):
 
 
     @swagger_auto_schema(
-        request_body=TbPacienteCreateUpdateSerializer,
+        request_body=TbPacienteSerializer,
         responses={201: TbPacienteSerializer}
     )
     def post(self, request):
-        serializer = TbPacienteCreateUpdateSerializer(data=request.data)
+        serializer = TbPacienteSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         paciente = serializer.save()
 
@@ -49,12 +49,12 @@ class TbPacienteApiView(APIView):
 
 
     @swagger_auto_schema(
-        request_body=TbPacienteCreateUpdateSerializer,
+        request_body=TbPacienteSerializer,
         responses={200: TbPacienteSerializer}
     )
     def patch(self, request, pk):
         paciente = get_object_or_404(TbPaciente, id=pk)
-        serializer = TbPacienteCreateUpdateSerializer(paciente, data=request.data, partial=True)
+        serializer = TbPacienteSerializer(paciente, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 

@@ -7,8 +7,7 @@ from rest_framework import status
 import logging
 
 from .models import TbRecetamedica
-from .serializer import TbCitaNombrePacienteSerializer, TbRecetaMedicaConNombreSerializer, TbRecetaMedicaSerializer
-from ..pacientes.serializers import TbPacienteCreateUpdateSerializer
+from .serializer import TbRecetaMedicaSerializer
 from ...Seguridad.permissions import CustomPermission
 
 # Configura el logger
@@ -18,27 +17,26 @@ class TbRecetaMedicaApiView(APIView):
     permission_classes = [IsAuthenticated, CustomPermission]
     model = TbRecetamedica
 
-    @swagger_auto_schema(responses={200: TbCitaNombrePacienteSerializer(many=True)})
+    @swagger_auto_schema(responses={200: TbRecetaMedicaSerializer(many=True)})
     def get(self, request):
         recetasmedicas = TbRecetamedica.objects.all()
-        serializer = TbRecetaMedicaConNombreSerializer(recetasmedicas, many=True)
+        serializer = TbRecetaMedicaSerializer(recetasmedicas, many=True)
         logger.info(
             f"El usuario '{request.user}' recuperó {recetasmedicas.count()} recetas medicas."
         )
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
-    @swagger_auto_schema(request_body=TbRecetaMedicaSerializer, responses={201: TbRecetaMedicaConNombreSerializer})
+    @swagger_auto_schema(request_body=TbRecetaMedicaSerializer, responses={201: TbRecetaMedicaSerializer})
     def post(self, request):
         serializer = TbRecetaMedicaSerializer(data=request.data)
         if serializer.is_valid():
             receta = serializer.save()
-            respuesta_serializer = TbRecetaMedicaConNombreSerializer(receta)
             logger.info(
                 f"El usuario '{request.user}' creó una nueva receta medica con ID: {receta.id}.")
             return Response(
                 {
                     "message": "La receta médica se insertó exitosamente.",
-                    "data": respuesta_serializer.data
+                    "data": receta.data
                 },
                 status=status.HTTP_201_CREATED
             )
@@ -54,7 +52,6 @@ class TbRecetaMedicaApiView(APIView):
         serializer = TbRecetaMedicaSerializer(receta_medica, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         receta = serializer.save()
-        respuesta_serializer = TbRecetaMedicaConNombreSerializer(receta)
 
         logger.info(
             f"El usuario '{request.user}' actualizó la receta medico con ID: {pk}.")
@@ -62,7 +59,7 @@ class TbRecetaMedicaApiView(APIView):
         return Response(
             {
                 "message": "La receta medica se actualizo se actualizó exitosamente.",
-                "data": respuesta_serializer.data
+                "data": receta.data
             },
             status=status.HTTP_200_OK
         )

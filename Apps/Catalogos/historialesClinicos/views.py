@@ -7,8 +7,7 @@ from rest_framework import status
 import logging
 
 from .models import TbHistorialclinico
-from .serializer import TbHistorialClinicoViewSerializer, TbHistorialClinicoCreateUpdateSerializer
-from ..pacientes.serializers import TbPacienteCreateUpdateSerializer
+from .serializer import TbHistorialClinicoViewSerializer
 from ...Seguridad.permissions import CustomPermission
 
 # Configura el logger
@@ -28,23 +27,17 @@ class TbHistorialClinicoApiView(APIView):
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
 
-    @swagger_auto_schema(request_body=TbHistorialClinicoCreateUpdateSerializer, responses={201: TbHistorialClinicoCreateUpdateSerializer})
+    @swagger_auto_schema(request_body=TbHistorialClinicoViewSerializer, responses={201: TbHistorialClinicoViewSerializer})
     def post(self, request):
-        serializer = TbHistorialClinicoCreateUpdateSerializer(data=request.data)
+        serializer = TbHistorialClinicoViewSerializer(data=request.data)
         if serializer.is_valid():
             historialclinico = serializer.save()
-
-            cita = historialclinico.idcita
-            paciente = cita.idpaciente
-            nombre_paciente = paciente.nombrecompleto
-
-            respuesta_serializer = TbHistorialClinicoCreateUpdateSerializer(historialclinico)
+            respuesta_serializer = TbHistorialClinicoViewSerializer(historialclinico)
             logger.info(
                 f"El usuario '{request.user}' creó un nuevo historial clinico con ID: {historialclinico.id}.")
             return Response(
                 {
                     "message": "El historial clinico se insertó exitosamente.",
-                    "nombre_paciente" : nombre_paciente,
                     "data": respuesta_serializer.data
                 },
                 status=status.HTTP_201_CREATED
@@ -52,20 +45,15 @@ class TbHistorialClinicoApiView(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
 
     @swagger_auto_schema(
-        request_body=TbHistorialClinicoCreateUpdateSerializer,
-        responses={200: TbHistorialClinicoCreateUpdateSerializer}
+        request_body=TbHistorialClinicoViewSerializer,
+        responses={200: TbHistorialClinicoViewSerializer}
     )
     def patch(self, request, pk):
         historial_clinico = get_object_or_404(TbHistorialclinico, id=pk)
-        serializer = TbHistorialClinicoCreateUpdateSerializer(historial_clinico, data=request.data, partial=True)
+        serializer = TbHistorialClinicoViewSerializer(historial_clinico, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-
-        cita = historial_clinico.idcita
-        paciente = cita.idpaciente
-        nombre_paciente = paciente.nombrecompleto
-
         historial = serializer.save()
-        respuesta_serializer = TbHistorialClinicoCreateUpdateSerializer(historial)
+        respuesta_serializer = TbHistorialClinicoViewSerializer(historial)
 
         logger.info(
             f"El usuario '{request.user}' actualizó el historial clinico con ID: {pk}.")
@@ -73,7 +61,6 @@ class TbHistorialClinicoApiView(APIView):
         return Response(
             {
                 "message": "La historial clinico se actualizó exitosamente.",
-                "nombre_paciente": nombre_paciente,
                 "data": respuesta_serializer.data
             },
             status=status.HTTP_200_OK

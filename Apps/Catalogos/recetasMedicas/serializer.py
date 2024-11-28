@@ -1,22 +1,12 @@
 from symtable import Class
-
 from rest_framework import serializers
-from Apps.Catalogos.citas.serializers import TbCitaNombrePacienteSerializer
 from .models import TbRecetamedica
 
-class TbRecetaMedicaConNombreSerializer(serializers.ModelSerializer):
-    idcita = TbCitaNombrePacienteSerializer()
-    class Meta:
-        model = TbRecetamedica
-        fields = [
-            'id',
-            'idcita',
-            'descripcion',
-        ]
 
 class TbRecetaMedicaSerializer(serializers.ModelSerializer):
+    nombrepaciente = serializers.CharField(source='idcita.idpaciente.nombrecompleto', read_only=True)
     class Meta:
         model = TbRecetamedica
         fields = [
-            'id', 'idcita', 'descripcion'
+            'id', 'idcita','nombrepaciente', 'descripcion'
         ]

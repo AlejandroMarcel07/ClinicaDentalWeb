@@ -8,7 +8,7 @@ from rest_framework import status
 import logging
 
 from .models import TbCita
-from .serializers import TbCitaSerializer, TbCitaCreateUpdateSerializer
+from .serializers import TbCitaSerializer
 from ..estadosCitas.models import TbEstadocita
 from ...Seguridad.permissions import CustomPermission
 
@@ -22,7 +22,7 @@ class TbCitaApiView(APIView):
 
     @swagger_auto_schema(responses={200: TbCitaSerializer(many=True)})
     def get(self, request):
-        citas = TbCita.objects.all()
+        citas = TbCita.objects.filter(idpaciente__isdeleted=False)
         serializer = TbCitaSerializer(citas, many=True)
         logger.info(
             f"El usuario '{request.user}' recuperó {citas.count()} citas."
@@ -30,11 +30,11 @@ class TbCitaApiView(APIView):
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
     @swagger_auto_schema(
-        request_body=TbCitaCreateUpdateSerializer,
+        request_body=TbCitaSerializer,
         responses={201: TbCitaSerializer}
     )
     def post(self, request):
-        serializer = TbCitaCreateUpdateSerializer(data=request.data)
+        serializer = TbCitaSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         cita = serializer.save()
         logger.info(
@@ -49,12 +49,12 @@ class TbCitaApiView(APIView):
 
 
     @swagger_auto_schema(
-        request_body=TbCitaCreateUpdateSerializer,
+        request_body=TbCitaSerializer,
         responses={200: TbCitaSerializer}
     )
     def patch(self, request, pk):
         cita = get_object_or_404(TbCita, id=pk)
-        serializer = TbCitaCreateUpdateSerializer(cita, data=request.data, partial=True)
+        serializer = TbCitaSerializer(cita, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         logger.info(

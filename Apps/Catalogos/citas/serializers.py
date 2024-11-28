@@ -9,36 +9,20 @@ from ..estadosCitas.models import TbEstadocita
 
 class TbCitaSerializer(serializers.ModelSerializer):
     # Gracias al charfield nos permite obtener solo una propiedad del objeto en sí y no todo el objeto
-    idpaciente = serializers.CharField(source='idpaciente.nombrecompleto')
-    idestadocita = serializers.CharField(source='idestadocita.nombreestado')
+    NombrePaciente = serializers.CharField(source='idpaciente.nombrecompleto', read_only=True )
+    NombreEstado = serializers.CharField(source='idestadocita.nombreestado', read_only=True)
 
     class Meta:
         model = TbCita
         fields = [
             'id',
             'idpaciente',
+            'NombrePaciente',
             'fecha',
             'idestadocita',
+            'NombreEstado',
             'horaentrada',
-            'horasalida'
-        ]
-
-class TbCitaNombrePacienteSerializer(serializers.ModelSerializer):
-    idpaciente = serializers.CharField(source='idpaciente.nombrecompleto')
-
-    class Meta:
-        model = TbCita
-        fields = ['id', 'idpaciente']
-
-class TbCitaCreateUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TbCita
-        fields = [
-            'idpaciente',
-            'fecha',
-            'idestadocita',
-            'horaentrada',
-            'horasalida'
+            'horasalida',
         ]
 
     def validate_fecha(self, value):

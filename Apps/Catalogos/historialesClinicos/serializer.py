@@ -1,27 +1,15 @@
 from rest_framework import serializers
 from .models import TbHistorialclinico
-from ..citas.serializers import TbCitaNombrePacienteSerializer
 
 
 class TbHistorialClinicoViewSerializer(serializers.ModelSerializer):
-    idcita = TbCitaNombrePacienteSerializer()
+    nombrepaciente = serializers.CharField(source='idcita.idpaciente.nombrecompleto', read_only=True)
     class Meta:
         model = TbHistorialclinico
         fields = [
             'id',
             'idcita',
-            'motivo',
-            'historiadeldolor',
-            'interpretacionradiografica',
-            'observacion'
-        ]
-
-class TbHistorialClinicoCreateUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TbHistorialclinico
-        fields = [
-            'id',
-            'idcita',
+            'nombrepaciente',
             'motivo',
             'historiadeldolor',
             'interpretacionradiografica',

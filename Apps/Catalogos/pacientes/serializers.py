@@ -3,7 +3,7 @@ from Apps.Catalogos.generos.serializers import TbGeneroSerializers
 from .models import TbPaciente
 
 class TbPacienteSerializer(serializers.ModelSerializer):
-    idgenero = TbGeneroSerializers()
+    nombregenero = serializers.CharField(source='idgenero.genero', read_only=True)
 
     class Meta:
         model = TbPaciente
@@ -13,21 +13,7 @@ class TbPacienteSerializer(serializers.ModelSerializer):
             'cedula',
             'edad',
             'idgenero',
-            'direccion',
-            'telefono',
-            'ocupacion',
-            'antecedentes',
-            'isdeleted'
-        ]
-
-class TbPacienteCreateUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TbPaciente
-        fields = [
-            'nombrecompleto',
-            'cedula',
-            'edad',
-            'idgenero',
+            'nombregenero',
             'direccion',
             'telefono',
             'ocupacion',
