@@ -29,28 +29,6 @@ class TbHistorialClinicoViewSerializer(serializers.ModelSerializer):
         return value
 
 
-class ExploracionClinicaSerializer(serializers.ModelSerializer):
-    nombreexploracion = serializers.CharField(source='idexploracionclinica.tipo', read_only=True)
-
-    class Meta:
-        model = TbHistorialclinicotbExploracionclinica
-        fields = ['nombreexploracion']
-
-class TratamientoSerializer(serializers.ModelSerializer):
-    nombretratamiento = serializers.CharField(source='idtratamiento.nombretratamiento', read_only=True)
-    precio = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
-
-    class Meta:
-        model = TbHistorialclinicotbTbTratamiento
-        fields = ['nombretratamiento', 'precio']
-
-class RecetaSerializer(serializers.ModelSerializer):
-    descripcion = serializers.CharField(source='descripcion', read_only=True)
-
-    class Meta:
-        model = TbRecetamedica
-        fields = ['descripcion']
-
 class DetalleHistorialClinicoSerializer(serializers.ModelSerializer):
 
     cita = serializers.SerializerMethodField()
