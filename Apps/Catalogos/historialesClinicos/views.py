@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
@@ -7,7 +8,7 @@ from rest_framework import status
 import logging
 
 from .models import TbHistorialclinico
-from .serializer import TbHistorialClinicoViewSerializer
+from .serializer import TbHistorialClinicoViewSerializer, DetalleHistorialClinicoSerializer
 from ..citas.models import TbCita
 from ...Seguridad.permissions import CustomPermission
 
@@ -85,3 +86,16 @@ class TbHistorialClinicoApiView(APIView):
             },
             status=status.HTTP_204_NO_CONTENT
         )
+
+
+
+class DetalleHistorialClinicoView(APIView):
+    def get(self, request, pk):
+        try:
+            historial = TbHistorialclinico.objects.get(pk=pk)
+            serializer = DetalleHistorialClinicoSerializer(historial)
+            return Response(serializer.data)
+        except TbHistorialclinico.DoesNotExist:
+            return Response({"error": "Historial no encontrado."}, status=404)
+        except ValidationError as e:
+            return Response({"error": str(e)}, status=404)

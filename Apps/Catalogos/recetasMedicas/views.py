@@ -38,7 +38,7 @@ class TbRecetaMedicaApiView(APIView):
             return Response(
                 {
                     "message": "La receta médica se insertó exitosamente.",
-                    "data": receta.data
+                    "data": serializer.data
                 },
                 status=status.HTTP_201_CREATED
             )
@@ -83,3 +83,4 @@ class TbRecetaMedicaApiView(APIView):
             },
             status=status.HTTP_204_NO_CONTENT
         )
+
