@@ -1,3 +1,4 @@
+from django.db.models import Avg, Min, Max, Count
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
@@ -7,7 +8,7 @@ from rest_framework import status
 import logging
 
 from .models import TbPaciente
-from .serializers import TbPacienteSerializer
+from .serializers import TbPacienteSerializer, TbPacienteEstadisticasSerializer
 from ...Seguridad.permissions import CustomPermission
 
 # Configura el logger
@@ -91,3 +92,57 @@ class TbPacienteApiView(APIView):
             },
             status=status.HTTP_204_NO_CONTENT
         )
+
+
+class TbPacienteEstadisticaApiView(APIView):
+
+    permission_classes = [IsAuthenticated, CustomPermission]
+    model = TbPaciente
+
+    @swagger_auto_schema(responses={200: TbPacienteEstadisticasSerializer})
+    def get(self, request):
+        pacientes_activos = TbPaciente.objects.filter(isdeleted=False)
+        pacientes_borrados = TbPaciente.objects.filter(isdeleted=True)
+
+        total_activos = pacientes_activos.count()
+        total_borrados = pacientes_borrados.count()
+        hombres = pacientes_activos.filter(idgenero__genero="Masculino").count()
+        mujeres = pacientes_activos.filter(idgenero__genero="Femenino").count()
+
+        edades = pacientes_activos.aggregate(
+            promedio_edad=Avg('edad'),
+            edad_minima=Min('edad'),
+            edad_maxima=Max('edad')
+        )
+
+        # Rangos de edad
+        rangos_edades = {
+            "niños (0-12)": pacientes_activos.filter(edad__lte=12).count(),
+            "jóvenes (13-35)": pacientes_activos.filter(edad__gte=13, edad__lte=35).count(),
+            "señores (36+)": pacientes_activos.filter(edad__gte=36).count(),
+        }
+
+        # Ocupaciones comunes
+        ocupaciones_comunes = (
+            pacientes_activos.values('ocupacion')
+            .annotate(cantidad=Count('ocupacion'))
+            .order_by('-cantidad')[:3]
+        )
+
+        # Pacientes sin antecedentes
+        sin_antecedentes = pacientes_activos.filter(antecedentes__isnull=True).count()
+
+        # Construir la respuesta
+        estadisticas = {
+            "total_activos": total_activos,
+            "total_borrados": total_borrados,
+            "hombres": hombres,
+            "mujeres": mujeres,
+            "edades": edades,
+            "rangos_edades": rangos_edades,
+            "ocupaciones_comunes": list(ocupaciones_comunes),
+            "sin_antecedentes": sin_antecedentes,
+        }
+
+        serializer = TbPacienteEstadisticasSerializer(estadisticas)
+        return Response(serializer.data, status=status.HTTP_200_OK)

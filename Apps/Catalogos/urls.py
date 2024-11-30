@@ -15,4 +15,6 @@ urlpatterns = [
     path('historialesclinicos/', include('Apps.Catalogos.historialesClinicos.urls')),
     path('historialesexploracion/', include('Apps.Catalogos.historialesClinicosExploracionClinica.urls')),
     path('historialtratamiento/', include('Apps.Catalogos.historialesClinicosTratamiento.urls')),
+    path('factura/', include('Apps.Catalogos.facturas.urls')),
+    path('detallefactura/', include('Apps.Catalogos.detallesFacturas.urls')),
 ]

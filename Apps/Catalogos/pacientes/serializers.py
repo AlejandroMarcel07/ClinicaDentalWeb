@@ -20,3 +20,14 @@ class TbPacienteSerializer(serializers.ModelSerializer):
             'antecedentes',
             'isdeleted'
         ]
+
+class TbPacienteEstadisticasSerializer(serializers.Serializer):
+    total_activos = serializers.IntegerField()
+    total_borrados = serializers.IntegerField()
+    hombres = serializers.IntegerField()
+    mujeres = serializers.IntegerField()
+    edades = serializers.DictField(child=serializers.FloatField())
+    rangos_edades = serializers.DictField(child=serializers.IntegerField())
+    ocupaciones_comunes = serializers.ListField(child=serializers.DictField())
+    sin_antecedentes = serializers.IntegerField()
+

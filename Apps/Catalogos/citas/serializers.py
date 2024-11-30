@@ -26,14 +26,11 @@ class TbCitaSerializer(serializers.ModelSerializer):
         ]
 
     def validate_fecha(self, value):
-        # Asegura que la fecha no sea del pasado
         if value < datetime.now().date():
             raise serializers.ValidationError("La fecha de la cita no puede ser en el pasado.")
         return value
 
     def validate(self, data):
-        """Validar conflictos de horarios y establecer valores por defecto."""
-        # Validar horas no superpuestas
         fecha = data.get('fecha')
         horaentrada = data.get('horaentrada')
         horasalida = data.get('horasalida')
@@ -52,7 +49,7 @@ class TbCitaSerializer(serializers.ModelSerializer):
         # Establecer estado por defecto si no se proporciona
         if 'idestadocita' not in data or not data['idestadocita']:
             try:
-                data['idestadocita'] = TbEstadocita.objects.get(idestadocita=1)  # Ajusta si el nombre del campo es otro
+                data['idestadocita'] = TbEstadocita.objects.get(idestadocita=1)
             except TbEstadocita.DoesNotExist:
                 raise serializers.ValidationError("Estado de cita con ID 1 no encontrado.")
 
